@@ -10,8 +10,8 @@ import { getFirestore } from 'firebase/firestore';
 // use with caution.
 // https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions
 export async function handleReviewFormSubmission(data) {
-  const { app } = await getAuthenticatedAppForUser();
-  const db = getFirestore(app);
+  const { firebaseServerApp } = await getAuthenticatedAppForUser();
+  const db = getFirestore(firebaseServerApp);
 
   await addReviewToRestaurant(db, data.get('restaurantId'), {
     text: data.get('text'),
