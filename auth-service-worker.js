@@ -22,6 +22,19 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  /* 
+  
+  FIX FROM https://github.com/firebase/friendlyeats-web/issues/295#issuecomment-2318574547
+  
+  START 
+  */
+  if (!firebaseConfig) {
+    const serializedFirebaseConfig = new URL(location).searchParams.get(
+      'firebaseConfig'
+    );
+    firebaseConfig = JSON.parse(serializedFirebaseConfig);
+  }
+  /* END */
   const { origin } = new URL(event.request.url);
   if (origin !== self.location.origin) return;
   event.respondWith(fetchWithFirebaseHeaders(event.request));
