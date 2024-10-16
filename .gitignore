@@ -5,3 +5,4 @@ node_modules/
 apphosting.yaml
 .env.local
 .env.production
+.env
