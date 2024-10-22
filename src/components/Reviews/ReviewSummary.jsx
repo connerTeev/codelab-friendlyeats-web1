@@ -2,6 +2,26 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 import { getReviewsByRestaurantId } from '@/src/lib/firebase/firestore.js';
 import { getAuthenticatedAppForUser } from '@/src/lib/firebase/serverApp';
 import { getFirestore } from 'firebase/firestore';
+import { HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
+
+const safetySettings = [
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    probability: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    probability: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+  },
+];
 
 export async function GeminiSummary({ restaurantId }) {
   const { firebaseServerApp } = await getAuthenticatedAppForUser();
@@ -11,7 +31,10 @@ export async function GeminiSummary({ restaurantId }) {
   );
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-pro',
+    safetySettings: safetySettings,
+  });
 
   const reviewSeparator = '@';
   const prompt = `
